@@ -36,6 +36,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 
 
 /**
@@ -87,7 +89,10 @@ public class Notification extends CordovaPlugin {
             return true;
         }
         else if (action.equals("prompt")) {
-            this.prompt(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), callbackContext);
+            // =========================================
+            // skreuzhuber: added 4. parameter "inputType"
+            // =========================================
+            this.prompt(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), callbackContext);
             return true;
         }
         else if (action.equals("activityStart")) {
@@ -268,8 +273,14 @@ public class Notification extends CordovaPlugin {
      * @param title             The title of the dialog
      * @param buttonLabels      A comma separated list of button labels (Up to 3 buttons)
      * @param callbackContext   The callback context.
+     * @param inputType         The type of expected input. Can be either "numeric" or 
+     *                          "alphanumeric", "numericPassword", "alphanumericPassword".
+     *                          Defaults to "alphanumeric":
+     * ===================================================================================
+     * skreuzhuber: added parameter inputType
+     * ====================================================================================
      */
-    public synchronized void prompt(final String message, final String title, final JSONArray buttonLabels, final String defaultText, final CallbackContext callbackContext) {
+    public synchronized void prompt(final String message, final String title, final JSONArray buttonLabels, final String defaultText, final String inputType, final CallbackContext callbackContext) {
   	
         final CordovaInterface cordova = this.cordova;
        
@@ -277,6 +288,19 @@ public class Notification extends CordovaPlugin {
             public void run() {
                 final EditText promptInput =  new EditText(cordova.getActivity());
                 promptInput.setHint(defaultText);
+                
+                if(inputType != null && inputType.equalsIgnoreCase("numericPassword")){
+                  promptInput.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                  promptInput.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }else if(inputType != null && inputType.equalsIgnoreCase("alphanumericPassword")){
+                  promptInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                  promptInput.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }else if(inputType != null && inputType.equalsIgnoreCase("numeric")){
+                  promptInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+                }else{
+                  promptInput.setInputType(InputType.TYPE_CLASS_TEXT);
+                }
+                
                 AlertDialog.Builder dlg = createDialog(cordova); // new AlertDialog.Builder(cordova.getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 dlg.setMessage(message);
                 dlg.setTitle(title);
