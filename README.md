@@ -21,7 +21,7 @@
 
 For general information please consult the official plugin documentation: https://github.com/apache/cordova-plugin-dialogs
 
-This project extendend the cordova-plugin-dialogs with possibilities to specify an "inputType" for the "prompt(...) method. 
+This project extends the cordova-plugin-dialogs with the possibility to specify an "inputType" for the `prompt(...)' method. 
 Supported values for "inputType" include:
 * "numeric"
 * "alphanumeric"
@@ -31,6 +31,7 @@ Supported values for "inputType" include:
 Where numeric values aim to display a keyboard containing only numbers. Password values hide the entered characters.
 
 A sample call for a pin input dialog:
+
 `navigator.notification.prompt("Please enter your PIN:", callback, "Login", ["OK", "Cancel"], "", "numericPassword");`
 
 ## Supported platforms
