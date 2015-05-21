@@ -31,7 +31,7 @@ Supported values for "inputType" include:
 Where numeric values aim to display a keyboard containing only numbers. Password values hide the entered characters.
 
 A sample call for a pin input dialog:
-`navigator.notification.prompt("Please enter your PIN:", callback, "Login", ["OK", "Cancel"], "", "numbericPassword");`
+`navigator.notification.prompt("Please enter your PIN:", callback, "Login", ["OK", "Cancel"], "", "numericPassword");`
 
 ## Supported platforms
 * Android
