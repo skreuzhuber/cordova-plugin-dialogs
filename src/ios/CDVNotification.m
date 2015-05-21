@@ -22,6 +22,11 @@
 #define DIALOG_TYPE_ALERT @"alert"
 #define DIALOG_TYPE_PROMPT @"prompt"
 
+#define INPUT_TYPE_NUMERIC @"numeric"
+#define INPUT_TYPE_ALPHANUMERIC @"alphanumeric"
+#define INPUT_TYPE_NUMERIC_PASSWORD @"numericPassword"
+#define INPUT_TYPE_ALPHANUMERIC_PASSWORD @"alphanumericPassword"
+
 static void soundCompletionCallback(SystemSoundID ssid, void* data);
 
 @implementation CDVNotification
@@ -35,8 +40,12 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
  *  defaultText   The input text for the textbox (if textbox exists).
  *  callbackId    The commmand callback id.
  *  dialogType    The type of alert view [alert | prompt].
+ *  inputType     The inputType [numeric | alphanumeric | numericPassword | alphanumericPassword]. Default: alphanumeric.
+ * ==========================================================================
+ * skreuzhuber: added parameter "inputType"
+ * ==========================================================================
  */
-- (void)showDialogWithMessage:(NSString*)message title:(NSString*)title buttons:(NSArray*)buttons defaultText:(NSString*)defaultText callbackId:(NSString*)callbackId dialogType:(NSString*)dialogType
+- (void)showDialogWithMessage:(NSString*)message title:(NSString*)title buttons:(NSArray*)buttons defaultText:(NSString*)defaultText callbackId:(NSString*)callbackId dialogType:(NSString*)dialogType inputType:(NSString*)inputType
 {
     
     NSUInteger count = [buttons count];
@@ -91,6 +100,10 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
             
             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                 textField.text = defaultText;
+
+                if([inputType isEqualToString:INPUT_TYPE_NUMERIC_PASSWORD] || [inputType isEqualToString:INPUT_TYPE_ALPHANUMERIC_PASSWORD]){
+                    textField.secureTextEntry = YES;
+                }
             }];
         }
         
@@ -116,7 +129,13 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
         }
         
         if ([dialogType isEqualToString:DIALOG_TYPE_PROMPT]) {
-            alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+            
+            if([inputType isEqualToString:INPUT_TYPE_NUMERIC_PASSWORD] || [inputType isEqualToString:INPUT_TYPE_ALPHANUMERIC_PASSWORD]){
+                alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;
+            }else{
+                alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+            }
+
             UITextField* textField = [alertView textFieldAtIndex:0];
             textField.text = defaultText;
         }
@@ -155,8 +174,9 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
     NSString* title = [command argumentAtIndex:1];
     NSArray* buttons = [command argumentAtIndex:2];
     NSString* defaultText = [command argumentAtIndex:3];
+    NSString* inputType = [command argumentAtIndex:4];
 
-    [self showDialogWithMessage:message title:title buttons:buttons defaultText:defaultText callbackId:callbackId dialogType:DIALOG_TYPE_PROMPT];
+    [self showDialogWithMessage:message title:title buttons:buttons defaultText:defaultText callbackId:callbackId dialogType:DIALOG_TYPE_PROMPT inputType:inputType];
 }
 
 /**
